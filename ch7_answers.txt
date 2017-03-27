@@ -1,0 +1,16 @@
+<hwml>
+	<assignment chapter=“7” book_edition="2" student="Casey Bladow">
+	<problem number=“2”>
+		(a)Jump and branch will write their target address into the register file.
+		sw will write the destination address or a random value into register file.
+		(b)lw and sw will not work correctly. lw and sw will perform a random operation
+		depending on the least significant bits of the address field instead of addition
+		operation necessary for address calculation.
+		(c)All instructions will not work correctly. Both instruction and data memories will be
+		written over by the contents of register B.
+	</problem>
+	<problem number="28">
+		$t0 is being read, $s1 is being written
+	</problem>
+	</assignment>
+</hwml>

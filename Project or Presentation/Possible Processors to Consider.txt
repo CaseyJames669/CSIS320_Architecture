@@ -1,0 +1,65 @@
+ARM:
+	ARM
+	Thumb
+	(Cover those two together)
+
+Digital:
+	VAX
+
+Digital:
+	Alpha
+
+WDC and 65xx family:
+	6502 (first generation)
+	65C02 (intermediate)
+	65c816 (the most advanced of this line)
+	(Cover all of these together - can be done in a group of two - instructor has Assembly Language programming resources in these for those interested)
+
+Motorola:
+	6800 (very first of the 68k family)
+	68040 (most popular during its height of the 68k family)
+		(may also include the 68030 and 68060)
+	DragonBall (the ones with the 68k cores,
+		not the ones with the ARM cores)
+	(Cover all of these together - can be done in a group of two)
+
+Intel:
+	Itanium (IA-64)
+
+Hitachi:
+	SuperH
+
+HP:
+	PA-RISC
+
+IBM:
+	POWER
+	PowerPC
+	Cell Broadband Engine (CBE)
+	(Cover all of these together - can be done in a group of two)
+
+Sun:
+	SPARC
+	UltraSPARC
+	(Cover all of these together)
+
+ATMEL:
+	AVR
+	ATmega168 and similar
+
+Texas Instruments:
+	OMAP (the older ones, not the ones that have the ARM cores, but the ones that had their own custom cores)
+
+Mitsubishi:
+	M32R
+
+Unisys:
+	2200 Series
+
+XMOS:
+	XCore XS1
+
+Rabbit 2000?:
+	Z80
+
+

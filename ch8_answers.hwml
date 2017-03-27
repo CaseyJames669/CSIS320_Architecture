@@ -1,0 +1,29 @@
+<hwml>
+	<assignment chapter="8" book_edition="2" student="Casey Bladow">
+	<problem number="22">
+		(a)
+		Without the TLB:
+		AMAT = 100+[1+.02(100+0.000003(1,000,000))]cycles = 103.06 cycles
+		With the TLB:
+		AMAT = [1+0.0005(100)]+[1+0.02(100+0.000003*1,000,000)] cycles = 4.11 cycles
+		(b)
+		Number of bits per entry = valid bit + tag bits + physical page number
+		1 + 20 + 11 = 32 bits (Number of bits per entry)
+		64 * 32 = 2048 bits (Total size of the TLB)
+		(d)
+		1 * 2048 bit SRAM
+	</problem>
+	<problem number="26">
+		Virtual memory size might affect how an application is written...
+		Just like everything else on a computer memory has to be used. Programs have to 
+		be written to keep within certain limits. Exceeding these limits will cause
+		extreme stress on the memory and drastically affect the performance.
+		The page size and physical memory size affect the performance...
+		The amount of physical memory impacts other resource limits. The amount
+		of non-paged pool, operating system buffers backed by physical memory, is
+		constrained by physical memory. Physical memory also contributes to the system
+		memory limit, which is the sum of roughly the size of physical memory plus the maximum
+		configured size of any paging files. 
+	</problem>
+	</assignment>
+</hwml>

@@ -1,0 +1,284 @@
+https://github.com/dashdanw/MIPS-Assembly/blob/master/factorial-iterative.s
+
+		.data
+nl: 	.asciiz "\n"
+		.align 2
+name:	.asciiz "CSE3666: Lab Assignment 1: Dash Winterson\n\n\n"
+		.align 2
+msg1:	.asciiz "! is equal to HI:"
+		.align 2
+lomsg:	.asciiz " LO:"
+		.align 2
+space:	.asciiz	"   "
+		.align 2
+
+
+		.text
+		.globl 	main
+
+main: 	li		$a3,15			#stores 15 as function parameter
+		li 		$t0,1
+		la 		$a0,name		#system calls use a0 for argument, and v0 for return value to pass to system
+		li 		$v0,4
+		syscall
+		move	$a0,$a3
+		li		$v0,1
+		syscall
+		la 		$a0,msg1
+		li		$v0,4
+		syscall
+		ble		$a3,1,print
+
+
+loop: 	mult	$t0,$a3 		#uses temp dirs as not to overlap the lo multiplication with the high multiplication
+		mflo	$t0				#preserves the return values of old multiplication to calculate overflow
+		mfhi	$t2
+
+		mult	$t1,$a3
+		mflo	$t3
+		add		$t1,$t2,$t3		#add into temps
+
+		addiu	$a3,-1 			#decrement function argument for iterative call
+
+		bge		$a3,2,loop
+		
+
+print:  move 	$a0,$t1
+		li		$v0,1
+		syscall
+		la 		$a0,lomsg
+		li 		$v0,4
+		syscall
+		move 	$a0,$t0
+		li 		$v0,1
+		syscall
+
+Exit: 	li 		$v0,10
+		syscall
+
+		
+		
+		
+		
+		
+https://gist.github.com/dcalacci/3747521
+		
+.globl main
+.data
+  msgprompt: .word msgprompt_data
+  msgres1: .word msgres1_data
+  msgres2: .word msgres2_data
+ 
+  msgprompt_data: .asciiz "Positive integer: "
+  msgres1_data: .asciiz "The value of factorial("
+  msgres2_data: .asciiz ") is "
+ 
+# every function call has a stack segment of 12 bytes, or 3 words.
+# the space is reserved as follows:
+#   0($sp) is reserved for the initial value given to this call
+# 4($sp) is the space reserved for a return value
+# 8($sp) is the space reserved for the return address.
+# calls may manipulate their parent's data, but parents may not
+# manipulate their child's data.
+# i.e: if we have a call A who has a child call B:
+# B may run:
+#   sw $t0, 16($sp)
+# which would store data from $t0 into the parent's return value register
+#   A, however, should not(and, in all cases I can think of, cannot) manipulate
+#   any data that belongs to a child call.
+ 
+ 
+.text
+main:
+  # printing the prompt
+  #printf("Positive integer: ");
+  la      $t0, msgprompt    # load address of msgprompt into $t0
+  lw      $a0, 0($t0)       # load data from address in $t0 into $a0
+  li      $v0, 4            # call code for print_string
+  syscall                   # run the print_string syscall
+ 
+  # reading the input int
+  # scanf("%d", &number);
+  li      $v0, 5            # call code for read_int
+  syscall                   # run the read_int syscall
+  move    $t0, $v0          # store input in $t0
+ 
+  move    $a0, $t0          # move input to argument register $a0
+  addi    $sp, $sp, -12     # move stackpointer up 3 words
+  sw      $t0, 0($sp)       # store input in top of stack
+  sw      $ra, 8($sp)       # store counter at bottom of stack
+  jal     factorial         # call factorial
+ 
+  # when we get here, we have the final return value in 4($sp)
+ 
+  lw      $s0, 4($sp)       # load final return val into $s0
+ 
+  # printf("The value of 'factorial(%d)' is:  %d\n",
+  la      $t1, msgres1      # load msgres1 address into $t1
+  lw      $a0, 0($t1)       # load msgres1_data value into $a0
+  li      $v0, 4            # system call for print_string
+  syscall                   # print value of msgres1_data to screen
+ 
+  lw      $a0, 0($sp)       # load original value into $a0
+  li      $v0, 1            # system call for print_int
+  syscall                   # print original value to screen
+ 
+  la      $t2, msgres2      #load msgres2 address into $t1
+  lw      $a0, 0($t2)       # load msgres_data value into $a0
+  li      $v0, 4            # system call for print_string
+  syscall                   # print value of msgres2_data to screen
+ 
+  move    $a0, $s0          # move final return value from $s0 to $a0 for return
+  li      $v0, 1            # system call for print_int
+  syscall                   # print final return value to screen
+ 
+  addi    $sp, $sp, 12      # move stack pointer back down where we started
+ 
+  # return 0;
+  li      $v0, 10           # system call for exit
+  syscall                   # exit!
+ 
+ 
+ 
+.text
+factorial:
+  # base  case - still in parent's stack segment
+  lw      $t0, 0($sp)       # load input from top of stack into register $t0
+  #if (x == 0)
+  beq     $t0, 0, returnOne # if $t0 is equal to 0, branch to returnOne
+  addi    $t0, $t0, -1      # subtract 1 from $t0 if not equal to 0
+ 
+  # recursive case - move to this call's stack segment
+  addi    $sp, $sp, -12     # move stack pointer up 3 words
+  sw      $t0, 0($sp)       # store current working number into the top of the stack segment
+  sw      $ra, 8($sp)       # store counter at bottom of stack segment
+ 
+  jal     factorial         # recursive call
+ 
+  # if we get here, then we have the child return value in 4($sp)
+  lw      $ra, 8($sp)       # load this call's $ra again(we just got back from a jump)
+  lw      $t1, 4($sp)       # load child's return value into $t1
+ 
+  lw      $t2, 12($sp)      # load parent's start value into $t2
+# return x * factorial(x-1); (not the return statement, but the multiplication)
+  mul     $t3, $t1, $t2     # multiply child's return value by parent's working value, store in $t3.
+ 
+  sw      $t3, 16($sp)      # take result(in $t3), store in parent's return value.
+ 
+  addi    $sp, $sp, 12      # move stackpointer back down for the parent call
+ 
+  jr      $ra               # jump to parent call
+ 
+.text
+#return 1;
+returnOne:
+  li      $t0, 1            # load 1 into register $t0
+  sw      $t0, 4($sp)       # store 1 into the parent's return value register
+  jr      $ra               # jump to parent call
+  
+  
+  
+  
+  
+  http://stackoverflow.com/questions/18925851/fibonacci-sequence-in-mips-using-a-while-loop
+  
+      .data
+    msg: .asciiz "Please enter a number to calculate the fibonnaci sequence for"
+    equalsOne: .asciiz "The answer is 1"
+    equalsTwo: .asciiz "The answer is 2"
+    answer: .asciiz "The answer is "
+
+
+.text
+    addi $v0, $zero, 4  #Set $v0 to 4 (Print String)
+    la $a0, msg         #Set memory address of msg to $a0
+    syscall
+    addi $v0, $zero, 5  #Set $v0 to 5 (Read Integer)
+    syscall
+    add $t0, $zero, $v0 #Store input integer in $t0
+    beq $t0, 1, equals1 #If input integer == 1, go to equals1 
+    beq $t0, 2, equals2 #If input integer == 2, go to equals2
+    addi $t1, $zero, 1  #Stores 1 in register $t1
+    addi $a1, $zero, 1  # $a1 = currentNumber
+    addi $a2, $zero, 1  # $a2 = oldNumber
+
+fib:    slt $t2, $a1, $t0   #While $a1 < $t0
+    bne $t2, 1, exit
+    add $a3, $a1, $a2   # $a3 = nextNumber = currentNumber + oldNumber
+    add $a2, $a1, $zero #Set oldNumber = currentNumber
+    add $a1, $a3, $zero #Set currentNumber = nextNumber
+    j fib
+
+equals1: la $a0, equalsOne
+    addi $v0, $zero, 4
+    syscall
+
+equals2: la $a0, equalsTwo
+    addi $v0, $zero, 4
+    syscall
+
+exit: addi $v0, $zero, 1    #Print integer
+    add $a0, $a1, $zero #Print nextNumber
+    syscall
+	
+	
+
+	
+	http://courses.cs.washington.edu/courses/cse378/02sp/sections/section4-5.html
+	
+	
+	fib:  addi $sp, $sp,   -8     # Entry code
+      sw   $ra, 0($sp)
+      sw   $fp, 4($sp)
+      add  $fp, $sp,   $zero  # End of entry code
+
+      # Compare n with 2
+      lw   $t0, 8($fp)        # $t0 holds the argument n
+      slti $t1, $t0,   2      # if $t0 < 2 ...
+      beq  $t1, $zero, over   # ... skip the next two instructions
+
+      # n < 2
+      addi $v0, $zero, 1      # We're done with the recursion
+      j    exit               # Jump to the exit code
+
+over: # n >= 2
+
+      # Calculate fib(n - 1)
+      addi $t0, $t0,   -1     # Calculate n - 1
+
+      # Set up to call fib with argument n - 1
+                              # No registers need to be saved
+      addi $sp, $sp,   -4     # Allocate space for arguments
+      sw   $t0, 0($sp)        # n - 1 is our argument
+      jal  fib                # Call the fib procedure
+
+      # Clean up after calling fib with argument n - 1
+      addi $sp, $sp,   4      # Pop off the argument
+                              # No registers need to be restored
+
+      # $v0 holds the result of fib(n - 1)
+      add  $t1, $v0,   $zero  # Put the result into $t1
+
+      # Calculate fib(n - 2)
+      lw   $t0, 8($fp)        # $t0 holds the argument n
+      addi $t0, $t0,   -2     # Calculate n - 2
+
+      # Set up to call fib with argument n - 2
+      addi $sp, $sp,   -4     # Allocate space for saved register
+      sw   $t1, 0($sp)        # Save $t1 (the result of fib(n - 1))
+      addi $sp, $sp,   -4     # Allocate space for arguments
+      sw   $t0, 0($sp)        # n - 2 is our argument
+      jal  fib                # Call the fib procedure
+
+      # Clean up after calling fib with argument n - 2
+      addi $sp, $sp,   4      # Pop off the argument
+      lw   $t1, 0($sp)        # Restore $t1 (the result of fib(n - 1))
+      addi $sp, $sp,   4      # Deallocate space for saved register
+
+      # $v0 holds the result of fib(n - 2)
+      add  $v0, $t1,   $v0    # Result is fib(n - 1) + fib(n - 2)
+
+exit: lw   $ra, 0($sp)        # Exit code
+      lw   $fp, 4($sp)
+      addi $sp, $sp,   8
+      jr   $ra                # End of exit code

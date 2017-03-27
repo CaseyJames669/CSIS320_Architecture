@@ -1,0 +1,16 @@
+3 Instruction types: R-type, I-type, and J-type.
+R-type:
+	R-type instructions refer to register type instruction. The most complex.
+	add $rd, $rs, $rt
+	where $rd refers to some register d. $rs, $rt are also registers.
+	R[d] = R[s] + R[t]
+	Addition.
+I-type:
+	I-type is short for "immediate type".
+	lw/sw $1,1000($2)
+	$1 <-- Mem[$2+1000]
+	$1 --> Mem[$2+1000]
+J-type:
+	J-type is short for "jump type".
+	j target
+	Jump to instruction (not byte) target

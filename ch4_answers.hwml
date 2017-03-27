@@ -1,0 +1,33 @@
+<hwml>
+	<assignment chapter="4" book_edition="2" student="Casey Bladow">
+	<problem number="34">
+		module traffic(ST, Clk, Reset, C, TL, TS);
+			input Clk, Reset, C, TL, TS; output ST;
+			reg ST; reg state;
+			reg next_state; reg next_ST;
+			parameter S0 = 0, S1 = 1, s2 = 2, S3 = 3;
+			
+			always @(C or TL or TS or state)
+				case(state)
+					S0: if (!(TL && C)) begin
+						next_state = S0; next_ST = 0;
+					else if (TL || C) begin
+						next_state = S1; next_ST = 1;
+					end
+				endcase
+			
+		always @posedge Clk)
+			if (Reset) begin state <= S0; ST <= 0; end
+			else begin state <= next_state; ST <= next_ST; end
+		endmodule
+	</problem>
+	<problem number="46">
+		Any signal that you want to have multi drivers, such as a bidirectional
+		bus, should be declared with a net type such as wire or tri.
+		Try-state logic, also called bidirectional pin.
+		can carry 0, 1, or z.
+		When the value is z, it functions as an input wire.
+		When the value is 0 or 1, it functions as an output wire.
+	</problem>
+	</assignment>
+</hwml>

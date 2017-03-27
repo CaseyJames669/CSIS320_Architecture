@@ -1,0 +1,81 @@
+<hwml>
+	<assignment chapter="6" book_edition="2" student="Casey Bladow">
+	<problem number="26">
+		(a)
+		00a02020
+		0c000000
+		03e00008
+		ae500000
+		1480fffb
+		08000000
+		20840000
+		08000000
+		(b)
+		Register Addressing
+		Pseudodirect Addressing
+		Register Direct Addressing
+		Base Addressing
+		PC-relative addressing
+		Pseudodirect Addressing
+		Update Addressing
+		Pseudodirect Addressing
+	</problem>
+	<problem number="34">
+		(a)
+		void concat(char string1[], char string2[], char stringconcat[])
+		stringconcat = string1 + string2
+		(b)
+		# String concatenate
+
+		.text
+
+		# Copy first string to result buffer
+		la $a0, str1
+		la $a1, result
+		jal strcopier
+		nop
+
+		# Concatenate second string on result buffer
+		la $a0, str2
+		or $a1, $v0, $zero
+		jal strcopier
+		nop
+		j finish
+		nop
+
+		# String copier function
+		strcopier:
+		or $t0, $a0, $zero # Source
+		or $t1, $a1, $zero # Destination
+
+		loop:
+		lb $t2, 0($t0)
+		beq $t2, $zero, end
+		addiu $t0, $t0, 1
+		sb $t2, 0($t1)
+		addiu $t1, $t1, 1
+		b loop
+		nop
+
+		end:
+		or $v0, $t1, $zero # Return last position on result buffer
+		jr $ra
+		nop
+
+		finish:
+		j finish
+		nop
+	</problem>
+	<problem number="38">
+		(a)
+		mov $t0, $s2, imm31:0
+		(b)
+		lui $1,0x1000
+		lw $8,2($1)
+		(c)
+		$t0 <- $t1 rotated left by 5
+		(d)
+		$s4 <- $t6 rotated right by 31
+	</problem>
+	</assignment>
+</hwml>
